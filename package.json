@@ -1,0 +1,23 @@
+{
+  "name": "cloud-path-tracer",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jumbatm/cloud-path-tracer.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jumbatm/cloud-path-tracer/issues"
+  },
+  "homepage": "https://github.com/jumbatm/cloud-path-tracer#readme",
+  "dependencies": {
+    "ffi": "^2.3.0",
+    "ref-struct": "^1.1.0"
+  }
+}
