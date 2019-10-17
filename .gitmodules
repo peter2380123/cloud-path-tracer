@@ -1,4 +1,4 @@
 [submodule "libpath_tracer/path_tracer"]
 	path = rendering-unit/lib/path_tracer/path_tracer
 	url = https://www.github.com/jumbatm/path_tracer.git
-	branch = c_bindings
+	branch = master
