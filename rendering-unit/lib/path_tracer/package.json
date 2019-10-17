@@ -5,7 +5,8 @@
   "main": "lib.js",
   "scripts": {
     "start": "node lib.js",
-    "test": "node test/test.js"
+    "test": "npm run build && cd ./path_tracer && cargo test && cd ../ && node test/test.js",
+    "build": "cd ./path_tracer ; cargo build"
   },
   "repository": {
     "type": "git",
