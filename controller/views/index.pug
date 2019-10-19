@@ -1,0 +1,28 @@
+extends layout
+
+block content
+  div.bgimg
+  div.fg
+    h1 Welcome to #{title}
+    p Upload your scene information here:
+    
+    //form(method='post', enctype='multipart/form-data')
+      div(class='form-group')
+        div(class='input-group input-file')
+          span(class='input-group-btn')
+            button(class='btn btn-info btn-choose', type='button') Choose
+          input(type='text', class='form-control', placeholder='Choose a file...')
+          span(class='input-group-btn')
+            button(class='btn btn-primary', type='submit') Upload
+    
+    //form
+      div(class='custom-file')
+        input(type='file', class='custom-file-input', id='customFile')
+        label(class='custom-file-label', for='customFile') Choose file
+
+    //script(type='text/javascript').
+      $(".custom-file-input").on("change", function() {var fileName = $(this).val().split("\\").pop(); $(this).siblings(".custom-file-label").addClass("selected").html(fileName);});
+
+    form(method='post', enctype='multipart/form-data', action="/post")
+      input(class='text', type='file', name='file-select', accept='.json')
+      input(class='btn btn-primary btn-sm', type='submit', name='upload', value='Upload')
