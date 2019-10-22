@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "prestart": "mkdir -p ./uploads",
-    "start": "node ./bin/www"
+    "start": "node --trace-warnings ./bin/www"
   },
   "dependencies": {
     "bluebird": "^3.7.1",
