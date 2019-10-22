@@ -7,6 +7,7 @@
     "start": "node --trace-warnings ./bin/www"
   },
   "dependencies": {
+    "aws-sdk": "^2.553.0",
     "bluebird": "^3.7.1",
     "bootstrap": "^4.3.1",
     "cookie-parser": "~1.4.4",
