@@ -4,7 +4,6 @@
   "description": "",
   "main": "lib.js",
   "scripts": {
-    "start": "node lib.js",
     "test": "npm run build && cd ./path_tracer && cargo test --release && cd ../ && node test/test.js",
     "build": "cd ./path_tracer ; cargo build --release"
   },
