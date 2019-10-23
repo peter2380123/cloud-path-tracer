@@ -43,12 +43,12 @@ app.use(cookieParser());
  *      top_left: [ number, number ],
  *      height: number,
  *      width: number,
- *    },
  *    height: number,
  *    width: number,
  *    fov: number,
  *    bounces: number,
  *    samples_per_pixel: number,
+ *    },
  *  },
  * }
  *
