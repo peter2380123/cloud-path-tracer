@@ -103,6 +103,22 @@ function setupS3(){
   })
 }
 
+function upload2Bucket(){
+  return new Promise((resolve, reject) => {
+    let keyName = uuid.v4();
+    let content = uuid.v4() + uuid.v4(); // CHANGE THIS TO ACTUAL CONTENT
+    let objectParams = {Bucket: process.env.AWSBUCKETNAME, Key: keyName, Body: content};
+    // Create object upload promise
+    let uploadPromise = new AWS.S3({apiVersion: '2006-03-01'}).putObject(objectParams).promise();
+    uploadPromise.then(function(data){
+      console.log("Successfully uploaded data to " + objectParams.Bucket + "/" + objectParams.Key);
+      resolve(objectParams.Key);
+    }).catch(function(err){
+      reject(err);
+    })
+  })
+}
+
 
 /* GET users listing. */
 router.post('/', upload.any(), function(req, res, next) {
@@ -110,11 +126,14 @@ router.post('/', upload.any(), function(req, res, next) {
 
   upload2Cache(req.files[0].filename)
     .then(() => {
-      console.log("Running setupS3...")
+
+      /*
+      console.log("Uploading to S3 Bucket: " + process.env.AWSBUCKETNAME)
       // create bucket, and for now we log the name of created bucket
-      setupS3().then((whichBucket)=>{
-        console.log("--- Destination S3 is: " + whichBucket + " ---")
+      upload2Bucket().then((whichKey)=>{
+        console.log("--- File uploaded to S3, key: " + whichKey + " ---")
       })
+      */
 
       let uniqueID = String(req.files[0].filename).split("+", 1)
       res.render('post', { title: 'Online Path Tracer', uuid: uniqueID });
