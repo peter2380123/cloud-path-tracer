@@ -61,12 +61,10 @@ app.post('/', (req, res) => {
   let cache_port = req.body.cachePort;
   let cache_key = req.body.cacheKey;
   let scene_uuid = req.body.uuid;
-  let scene_information = req.body.scene_information;
   let render_options = req.body.render_options;
 
-  if (!bucket || !cache || !cache_port || !cache_key || !scene_uuid || !scene_information || !render_options) {
+  if (!bucket || !cache || !cache_port || !cache_key || !scene_uuid || !render_options) {
     res.status(400).send("Bad request parameters");
-    return;
   }
   // Validate render options.
   if (!render_options.height || !render_options.width || !render_options.fov || !render_options.bounces || !render_options.samples_per_pixel) {
@@ -79,13 +77,13 @@ app.post('/', (req, res) => {
   }
 
   // Grab scene information from the redis cache.
-  const redisClient = redis.createClient(cache_port, cache, { auth_pass: cacheKey, tls: cache });
+  const redisClient = redis.createClient(cache_port, cache, { auth_pass: cache_key, tls: cache });
   redisClient.on('error', err => {
     console.log(err);
     res.status(500).send("Issue with the Redis cache.");
   });
 
-  redisClient.getAsync(uuid)
+  redisClient.getAsync(scene_uuid)
     .then(scene_information => {
       let valid = PT.JSON.checkValid(scene_information);
       if (!valid.success) {
@@ -133,11 +131,12 @@ app.post('/', (req, res) => {
       console.log("Converting to base64");
       let buffer = Buffer.from(bufferData).toString('base64');
 
-      const S3 = AWS.S3({ apiVersion: '2006-03-01'});
-
-      return S3.putObject({ Bucket: bucket, Key: buffer }).promise();
+      const params = { Bucket: bucket, Key: scene_uuid, Body: buffer };
+      console.log(`Done! Putting ${JSON.stringify(params)}`);
+      return new AWS.S3({ apiVersion: '2006-03-01'}).putObject(params).promise();
     })
-    .then((_) => {
+    .then((result) => {
+      console.log("Successfully uploaded to bucket");
       res.status(200).send();
     })
     .catch(e => {
