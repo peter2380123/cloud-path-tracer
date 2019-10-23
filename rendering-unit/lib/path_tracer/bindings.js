@@ -1,3 +1,4 @@
+const path = require('path');
 var ref = require('ref')
 var StructType = require('ref-struct')
 var ffi = require('ffi')
@@ -32,13 +33,14 @@ var Pixel = StructType({
 /**
  * Define the symbols and signatures to load.
  */
-var lib = ffi.Library('path_tracer/target/release/libpath_tracer_ffi', {
+var lib = ffi.Library(path.join(__dirname, 'path_tracer', 'target', 'release', 'libpath_tracer_ffi'), {
   "PT_Vec3_new": [Vec3_ptr, ['double', 'double', 'double']],
   "PT_Vec3_delete": ['void', [Vec3_ptr]],
   "PT_SceneBuilder_new": [SceneBuilder_ptr, []],
   "PT_SceneBuilder_add_object": ['void', [SceneBuilder_ptr, Hit_ptr]],
   "PT_SceneBuilder_into_scene": [Scene_ptr, [SceneBuilder_ptr]],
   "PT_Scene_delete": ['void', [Scene_ptr]],
+  "PT_Scene_dump": ['void', [Scene_ptr]],
   "PT_Material_delete": ['void', [Material_ptr]],
   "PT_Material_Lambertian_new": [Material_ptr, ['double', 'double', 'double', 'double']],
   "PT_Material_Debugon_new": [Material_ptr, []],
@@ -46,6 +48,7 @@ var lib = ffi.Library('path_tracer/target/release/libpath_tracer_ffi', {
   "PT_Sphere_new": [Hit_ptr, ['double', 'double', 'double', 'double', Material_ptr]],
   "PT_Camera_new": [Scene_ptr, [Scene_ptr, Vec3_ptr, Vec3_ptr, Vec3_ptr]],
   "PT_Camera_render": [Image_ptr, [Camera_ptr, 'uint64', 'uint64', 'uint64', 'uint64', 'uint64', 'uint64', 'double', 'uint64', 'uint64']],
+  "PT_Camera_dump": ['void', [Camera_ptr]],
   "PT_Camera_delete": ['void', [Camera_ptr]],
   "PT_Image_delete": ['void', [Image_ptr]],
   "PT_Image_get_pixel": [Pixel, [Image_ptr, 'uint64', 'uint64']],

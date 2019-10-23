@@ -132,14 +132,18 @@ function buildMaterialsIndex(materialsDesc) {
  */
 function isValidSceneAndCamera(description) {
   let obj = null;
-  try {
-    obj = JSON.parse(description);
-  } catch (_) {
-    // First possible failure: 
-    return  { 
-      success: false, 
-      reason: "Invalid syntax."
-    };
+  if (typeof description === 'object') {
+    obj = description;
+  } else {
+    try {
+      obj = JSON.parse(description);
+    } catch (_) {
+      // First possible failure: 
+      return  { 
+        success: false, 
+        reason: "Invalid syntax."
+      };
+    }
   }
 
   if (!obj) {
@@ -226,9 +230,14 @@ function buildSceneAndCameraFromValidDescription(outputFromIsValidSceneDesc) {
   let scene = buildScene(sceneDesc.scene, materials);
   let camera = null;
   {
-    let up = b.Vec3.new(sceneDesc.camera.pos.x, sceneDesc.camera.pos.y, sceneDesc.camera.pos.z);
-    let forward = b.Vec3.new(sceneDesc.camera.forward.x, sceneDesc.camera.forward.y, sceneDesc.camera.forward.z);
+
+    console.log("SceneDesc");
+    console.log(sceneDesc.camera);
+
     let origin = b.Vec3.new(sceneDesc.camera.pos.x, sceneDesc.camera.pos.y, sceneDesc.camera.pos.z);
+    let up = b.Vec3.new(sceneDesc.camera.up.x, sceneDesc.camera.up.y, sceneDesc.camera.up.z);
+    let forward = b.Vec3.new(sceneDesc.camera.forward.x, sceneDesc.camera.forward.y, sceneDesc.camera.forward.z); 
+
     camera = b.Camera.new(scene, origin, up, forward);
 
     b.Vec3.delete(up);

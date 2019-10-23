@@ -7,6 +7,8 @@ const TEST = {
     let scene = PT.SceneBuilder.new();
     scene = PT.SceneBuilder.intoScene(scene);
 
+    PT.Scene.dump(scene);
+
     let camera = PT.Camera.new(
       scene,
       PT.Vec3.new(0.0, 0.0, 0.0),
