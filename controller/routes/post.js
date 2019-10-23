@@ -7,6 +7,7 @@ var redis = require('redis')
 var bluebird = require('bluebird')
 var fs = require('fs')
 var AWS = require('aws-sdk')
+var pt = require(path.join(__dirname, '..','..', 'common', 'path_tracer'))
 var router = express.Router();
 
 bluebird.promisifyAll(redis.RedisClient.prototype);
@@ -39,16 +40,22 @@ function upload2Cache(file) {
     fs.readFile(filepath,'utf8', async function(err, data) {
 
       try {
-        console.log("Test content returns: " + typeof JSON.parse(data))
+        // console.log("Test content returns: " + typeof JSON.parse(data))
+        let validity = await pt.JSON.checkValid(data)
+        if(!validity.success){
+          reject('File is not a valid JSON format.');
+          console.log("File validity: FAILED")
+        } else {
+          console.log("File validity: PASSED")
 
-        console.log("\nCache command: SET Message");
-        console.log("Cache respone: " +  await cacheConnection.setAsync(file, data));
+          console.log("\nCache command: SET Message");
+          console.log("Cache respone: " +  await cacheConnection.setAsync(file, data));
 
-        console.log("\nCache command: GET Message");
-        console.log("Cache response : " +  await cacheConnection.getAsync(file));
+          console.log("\nCache command: GET Message");
+          console.log("Cache response : " +  await cacheConnection.getAsync(file));
 
-        console.log("\nDeleting temp upload from server...")
-
+          console.log("\nDeleting temp upload from server...")
+        }
       } catch(e) {
         reject(e);
       }
@@ -103,19 +110,19 @@ router.post('/', upload.any(), function(req, res, next) {
 
   upload2Cache(req.files[0].filename)
     .then(() => {
-      let uniqueID = String(req.files[0].filename).split("+", 1)
-      res.render('post', { title: 'Online Path Tracer', uuid: uniqueID });
-      /*
       console.log("Running setupS3...")
       // create bucket, and for now we log the name of created bucket
       setupS3().then((whichBucket)=>{
         console.log("--- Destination S3 is: " + whichBucket + " ---")
       })
-      */
+
+      let uniqueID = String(req.files[0].filename).split("+", 1)
+      res.render('post', { title: 'Online Path Tracer', uuid: uniqueID });
+      console.log("Success page rendered")
     }).catch(error => {
       console.log(error)
       res.render('upload-fail', {title: 'Online Path Tracer', error_msg: error, error_code: JSON.stringify(error)})
-      console.log("res.render complete")
+      console.log("Fail page rendered")
     });
 });
 
