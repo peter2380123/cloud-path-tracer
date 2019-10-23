@@ -3,7 +3,7 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const helmet = require('helmet');
-const PT = require('./lib/path_tracer');
+const PT = require(path.join(__dirname, '..', 'common', 'path_tracer'));
 const bluebird = require('bluebird');
 
 const redis = require('redis');
