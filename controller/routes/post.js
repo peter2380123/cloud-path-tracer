@@ -70,70 +70,12 @@ function upload2Cache(file) {
   });
 }
 
-function setupS3(){
-  return new Promise((resolve, reject) => {
-      // Create unique bucket name
-    let bucketName = 'node-sdk-sample-' + uuid.v4();
-    // Create name for uploaded object key
-    // let keyName = 'hello_world.txt';
-
-    // Create a promise on S3 service object
-    let bucketPromise = new AWS.S3({apiVersion: '2006-03-01'}).createBucket({Bucket: bucketName}).promise();
-
-    // Handle promise fulfilled/rejected states
-    // ... let's not put anything for now, and instead just do an easy resolve of bucketName
-    /*
-    bucketPromise.then(function(data){
-      let objectParams = {Bucket: bucketName, Key: keyName, Body: 'Hewwo wowwd >w<'};
-      // Create object upload promise
-      let uploadPromise = new AWS.S3({apiVersion: '2006-03-01'}).putObject(objectParams).promise();
-      uploadPromise.then(function(data){
-        console.log("Successfully uploaded data to " + bucketName + "/" + keyName);
-        resolve(bucketName);
-      });
-    }).catch(function(err){
-      reject(err);
-    });
-    */
-    bucketPromise.then(function(data){
-      resolve(bucketName)
-    }).catch(function(err){
-      reject(err);
-    })
-  })
-}
-
-function upload2Bucket(){
-  return new Promise((resolve, reject) => {
-    let keyName = uuid.v4();
-    let content = uuid.v4() + uuid.v4(); // CHANGE THIS TO ACTUAL CONTENT
-    let objectParams = {Bucket: process.env.AWSBUCKETNAME, Key: keyName, Body: content};
-    // Create object upload promise
-    let uploadPromise = new AWS.S3({apiVersion: '2006-03-01'}).putObject(objectParams).promise();
-    uploadPromise.then(function(data){
-      console.log("Successfully uploaded data to " + objectParams.Bucket + "/" + objectParams.Key);
-      resolve(objectParams.Key);
-    }).catch(function(err){
-      reject(err);
-    })
-  })
-}
-
-
 /* GET users listing. */
 router.post('/', upload.any(), function(req, res, next) {
   console.log("filename is: " + req.files[0].filename)
 
   upload2Cache(req.files[0].filename)
     .then(() => {
-
-      /*
-      console.log("Uploading to S3 Bucket: " + process.env.AWSBUCKETNAME)
-      // create bucket, and for now we log the name of created bucket
-      upload2Bucket().then((whichKey)=>{
-        console.log("--- File uploaded to S3, key: " + whichKey + " ---")
-      })
-      */
 
       let uniqueID = String(req.files[0].filename).split("+", 1)
       res.render('post', { title: 'Online Path Tracer', uuid: uniqueID });
