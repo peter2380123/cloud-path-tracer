@@ -6,10 +6,18 @@
     "start": "node ./bin/www"
   },
   "dependencies": {
+    "aws-sdk": "^2.554.0",
+    "bluebird": "^3.7.1",
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
     "express": "~4.16.1",
+    "ffi": "^2.3.0",
     "helmet": "^3.21.2",
-    "morgan": "~1.9.1"
+    "morgan": "~1.9.1",
+    "path_tracer": "file:../common/path_tracer",
+    "pngjs": "^3.4.0",
+    "redis": "^2.8.0",
+    "ref": "^1.3.5",
+    "ref-struct": "^1.1.0"
   }
 }

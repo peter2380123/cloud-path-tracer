@@ -1,5 +1,5 @@
 {
-  "name": "cloud-path-tracer",
+  "name": "path_tracer",
   "version": "1.0.0",
   "description": "",
   "main": "lib.js",
