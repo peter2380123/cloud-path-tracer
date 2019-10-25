@@ -74,10 +74,8 @@ app.post('/', (req, res) => {
   }
   render_options.region = render_options.region || { top_left: [0, 0], height: 0, width: 0 };
   let region = render_options.region;
-  if (region) {
-    if (!region.top_left || region.top_left.length !== 2 || region.height === undefined || region.width === undefined) {
-      res.status(400).send("Missing options in region options.");
-    }
+  if (!region.top_left || region.top_left.length !== 2 || region.height === undefined || region.width === undefined) {
+    res.status(400).send("Missing options in region options.");
   }
 
   // Grab scene information from the redis cache.
