@@ -81,24 +81,25 @@ router.post('/', upload.any(), function(req, res, next) {
       let uniqueID = String(req.files[0].filename).split("+", 1)
       res.render('post', { title: 'Online Path Tracer', uuid: uniqueID });
       console.log("Success page rendered")
+
+      console.log("Posting job to RU...")
+      axios.post('http://localhost:3001', {
+        bucket: process.env.AWSBUCKETNAME,
+        cache: process.env.REDISCACHEHOSTNAME, 
+        cacheKey: process.env.REDISCACHEKEY,
+        uuid: req.files[0].filename,
+        cachePort: '6380',
+        render_options: {"height":600,"width":800,"fov":90,"bounces":10,"samples_per_pixel":10}
+      }).then(function(response){
+        console.log("Job posted!")
+      }).catch(function(error){
+        console.log("Error encounted: " + error);
+      });
     }).catch(error => {
       console.log(error)
       res.render('upload-fail', {title: 'Online Path Tracer', error_msg: error, error_code: JSON.stringify(error)})
       console.log("Fail page rendered")
     });
-});
-
-axios.post('http://localhost:3001', {
-  bucket: 'cab432',
-  cache: 'my-redis-cache.redis.cache.windows.net', 
-  cacheKey: 'JnmBrSnYJEC7e+6a+zXUtS4BaIAQT454Glza0BXlmOM=',
-  uuid: '351401de-56c7-4654-bd2f-efb564fb7126+1571978761478+pt-scene-info-template.json',
-  cachePort: '6380',
-  render_options: {"height":600,"width":800,"fov":90,"bounces":10,"samples_per_pixel":10}
-}).then(function(response){
-  console.log('in then');
-}).catch(function(error){
-  console.log(error);
 });
 
 module.exports = router;
