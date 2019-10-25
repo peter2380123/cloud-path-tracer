@@ -78,6 +78,7 @@ app.post('/', (req, res) => {
     res.status(400).send("Missing options in region options.");
   }
 
+
   // Grab scene information from the redis cache.
   const redisClient = redis.createClient(cache_port, cache, { auth_pass: cache_key, tls: cache });
   redisClient.on('error', err => {
