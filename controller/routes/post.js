@@ -83,12 +83,12 @@ router.post('/', upload.any(), function(req, res, next) {
       console.log("Success page rendered")
 
       console.log("Posting job to RU...")
-      axios.post('http://localhost:3001', {
+      axios.post(process.env.RUIP, {
         bucket: process.env.AWSBUCKETNAME,
         cache: process.env.REDISCACHEHOSTNAME, 
         cacheKey: process.env.REDISCACHEKEY,
         uuid: req.files[0].filename,
-        cachePort: '6380',
+        cachePort: process.env.CACHEPORT,
         render_options: {"height":600,"width":800,"fov":90,"bounces":10,"samples_per_pixel":10}
       }).then(function(response){
         console.log("Job posted!")
