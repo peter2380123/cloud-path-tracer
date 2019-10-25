@@ -42,7 +42,7 @@ var lib = ffi.Library(path.join(__dirname, 'path_tracer', 'target', 'release', '
   "PT_Scene_delete": ['void', [Scene_ptr]],
   "PT_Scene_dump": ['void', [Scene_ptr]],
   "PT_Material_delete": ['void', [Material_ptr]],
-  "PT_Material_Lambertian_new": [Material_ptr, ['double', 'double', 'double', 'double']],
+  "PT_Material_Lambertian_new": [Material_ptr, ['double', 'double', 'double', 'float']],
   "PT_Material_Debugon_new": [Material_ptr, []],
   "PT_Hit_delete": ['void', [Hit_ptr]],
   "PT_Sphere_new": [Hit_ptr, ['double', 'double', 'double', 'double', Material_ptr]],

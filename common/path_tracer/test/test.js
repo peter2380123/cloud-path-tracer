@@ -143,6 +143,65 @@ const TEST = {
       ],
     });
     assert(!PT.JSON.checkValid(desc).success);
+  },
+  regression_black_materials: () => {
+    let desc = JSON.stringify({
+      "materials": [
+        {
+          "type": "lambertian",
+          "fuzziness": 1,
+          "colour": {
+            "red": 0.5,
+            "green": 0.5,
+            "blue": 0.5
+          }
+        }
+      ],
+      "camera": {
+        "pos": {
+          "x": 0,
+          "y": 0,
+          "z": -2
+        },
+        "forward": {
+          "x": 0,
+          "y": 0,
+          "z": 1
+        },
+        "up": {
+          "x": 0,
+          "y": 1,
+          "z": 0
+        }
+      },
+      "scene": [
+        {
+          "type": "sphere",
+          "material": 0,
+          "radius": 1,
+          "pos": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          }
+        }
+      ]
+    });
+
+    let valid = PT.JSON.checkValid(desc);
+    assert(valid.success);
+    let camera = PT.JSON.parseValid(valid);
+
+    PT.Camera.dump(camera);
+
+    let image = PT.Camera.render(camera, 0, 0, 0, 0, 800, 600, 90.0, 5, 5);
+
+    // Center pixel should NOT be black.
+    let center_pixel = PT.Image.getPixel(image, 400, 300);
+
+    assert(center_pixel.red > 0.25 * 255);
+    assert(center_pixel.green > 0.25 * 255);
+    assert(center_pixel.blue > 0.25 * 255);
   }
   // TODO: Need more validation at some point. We've only tested a tiny portion of possible failures.
 };
