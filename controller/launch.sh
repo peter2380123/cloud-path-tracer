@@ -1,4 +1,4 @@
-#!/usr/bin/sh
+#!/bin/sh
 export RUIP=http://localhost:3001
 export AWSBUCKETNAME=cab432
 export REDISCACHEHOSTNAME=my-redis-cache.redis.cache.windows.net
