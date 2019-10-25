@@ -6,6 +6,7 @@ var uuid = require('uuid');
 var redis = require('redis')
 var bluebird = require('bluebird')
 var fs = require('fs')
+var axios = require('axios').default
 var AWS = require('aws-sdk')
 var pt = require(path.join(__dirname, '..','..', 'common', 'path_tracer'))
 var router = express.Router();
@@ -80,6 +81,20 @@ router.post('/', upload.any(), function(req, res, next) {
       let uniqueID = String(req.files[0].filename).split("+", 1)
       res.render('post', { title: 'Online Path Tracer', uuid: uniqueID });
       console.log("Success page rendered")
+
+      console.log("Posting job to RU...")
+      axios.post(process.env.RUIP, {
+        bucket: process.env.AWSBUCKETNAME,
+        cache: process.env.REDISCACHEHOSTNAME, 
+        cacheKey: process.env.REDISCACHEKEY,
+        uuid: req.files[0].filename,
+        cachePort: process.env.CACHEPORT,
+        render_options: {"height":600,"width":800,"fov":90,"bounces":10,"samples_per_pixel":10}
+      }).then(function(response){
+        console.log("Job posted!")
+      }).catch(function(error){
+        console.log("Error encounted: " + error);
+      });
     }).catch(error => {
       console.log(error)
       res.render('upload-fail', {title: 'Online Path Tracer', error_msg: error, error_code: JSON.stringify(error)})

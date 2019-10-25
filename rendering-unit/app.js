@@ -78,6 +78,7 @@ app.post('/', (req, res) => {
     res.status(400).send("Missing options in region options.");
   }
 
+
   // Grab scene information from the redis cache.
   const redisClient = redis.createClient(cache_port, cache, { auth_pass: cache_key, tls: cache });
   redisClient.on('error', err => {
@@ -153,13 +154,13 @@ app.post('/', (req, res) => {
 
         png.pack().pipe(fs.createWriteStream('out.png')).on('finish', () => {
           console.log("Done writing PNG image!");
-          new AWS.S3.ManagedUpload({
+          resolve(new AWS.S3.ManagedUpload({
             params: {
               Bucket: bucket,
-              Key: scene_uuid,
+              Key: scene_uuid + ".png",
               Body: fs.createReadStream('out.png'),
             }
-          }).promise();
+          }).promise());
           //const params = { Bucket: bucket, Key: scene_uuid, Body: buffer };
           //console.log(`Done! Putting ${JSON.stringify(params)}`);
           //resolve(new AWS.S3({ apiVersion: '2006-03-01'}).putObject(params).promise());
