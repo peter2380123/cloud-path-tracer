@@ -156,7 +156,7 @@ app.post('/', (req, res) => {
           console.log("Done writing PNG image!");
           new AWS.S3.ManagedUpload({
             params: {
-              Bucket: bucket,
+              Bucket: bucket + ".png",
               Key: scene_uuid,
               Body: fs.createReadStream('out.png'),
             }
