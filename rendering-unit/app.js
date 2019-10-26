@@ -153,13 +153,15 @@ app.post('/', (req, res) => {
           }
         } 
 
-        png.pack().pipe(fs.createWriteStream('out.png')).on('finish', () => {
+        const out_file_name = 'out-' + scene_uuid + '.png';
+
+        png.pack().pipe(fs.createWriteStream(out_file_name)).on('finish', () => {
           console.log("Done writing PNG image!");
           resolve(new AWS.S3.ManagedUpload({
             params: {
               Bucket: bucket,
               Key: scene_uuid + ".png",
-              Body: fs.createReadStream('out.png'),
+              Body: fs.createReadStream(out_file_name),
             }
           }).promise());
           //const params = { Bucket: bucket, Key: scene_uuid, Body: buffer };
