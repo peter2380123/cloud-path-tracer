@@ -47,19 +47,24 @@ function upload2Cache(file) {
           reject('File is not a valid JSON format.');
           console.log("File validity: FAILED")
         } else {
-          console.log("File validity: PASSED")
+          console.log("File validity: PASSED");
+
+          console.log("Now checking for render image options:");
+          console.log(validity);
+          let image = validity.description.image;
+          if (!image || !image.fov || !image.width || !image.height || !image.samples_per_pixel || !image.bounces) {
+            reject("Missing image option(s).");
+            return;
+          }
 
           console.log("\nCache command: SET Message");
           console.log("Cache respone: " +  await cacheConnection.setAsync(file, data));
 
-          console.log("\nCache command: GET Message");
-          console.log("Cache response : " +  await cacheConnection.getAsync(file));
-
-          console.log("\nDeleting temp upload from server...")
         }
       } catch(e) {
         reject(e);
       }
+      console.log("\nDeleting temp upload from server...");
       fs.unlink(filepath, (err) => {
         if(err){
           reject(err);
@@ -82,26 +87,27 @@ router.post('/', upload.any(), function(req, res, next) {
       console.log("Posting job to RU...")
       console.log(process.env.RUIP);
 
-      return new Promise((resolve, reject) => {
-        axios.post(process.env.RUIP, {
-          bucket: process.env.AWSBUCKETNAME,
-          cache: process.env.REDISCACHEHOSTNAME, 
-          cacheKey: process.env.REDISCACHEKEY,
-          uuid: uniqueID,
-          cachePort: process.env.CACHEPORT,
-          render_options: {"height":600,"width":800,"fov":90,"bounces":10,"samples_per_pixel":10}
-        }).then(success => {
-          resolve([success, uniqueID]);
-        }).catch(err => reject(err));
-      })
-    }).then(successAndUUID => {
-      res.redirect('/renders/' + successAndUUID[1]);
-      console.log("Success page rendered") 
-    }).catch(error => {
-          console.log(error);
-          res.render('upload-fail', {title: 'Online Path Tracer', error_msg: error, error_code: error.stack});
-          console.log("Fail page rendered");
+      res.redirect('/renders/' + uniqueID);
+      console.log("Success page redirect") 
+
+      axios.post(process.env.RUIP, {
+        bucket: process.env.AWSBUCKETNAME,
+        cache: process.env.REDISCACHEHOSTNAME, 
+        cacheKey: process.env.REDISCACHEKEY,
+        uuid: uniqueID,
+        cachePort: process.env.CACHEPORT,
+        /*
+         * region: { top_left: [number, number], height: number, width: number } 
+         */
+      }).catch(_err => {
+        // Render failed.
+        // TODO: See Issue #37.
       });
+    }).catch(error => {
+      console.log(error);
+      res.render('upload-fail', {title: 'Online Path Tracer', error_msg: error, error_code: error.stack});
+      console.log("Fail page rendered");
+    });
 });
 
-  module.exports = router;
+module.exports = router;

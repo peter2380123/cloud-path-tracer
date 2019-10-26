@@ -40,22 +40,14 @@ app.use(cookieParser());
  *  cacheKey: String,
  *  cachePort: number,
  *  uuid: String,
- *  render_options: {
- *    region: ? {
- *      top_left: [ number, number ],
- *      height: number,
- *      width: number,
+ *  region: ? {
+ *    top_left: [ number, number ],
  *    height: number,
  *    width: number,
- *    fov: number,
- *    bounces: number,
- *    samples_per_pixel: number,
- *    },
  *  },
  * }
  *
- * An example of a basic scene:
- * curl localhost:3000 --header "Content-Type: application/json" --request POST --data '{"bucket":"BUCKET_NAME","cache":"CACHE_NAME", "cacheKey": "CACHE_KEY", "uuid":"SCENE_UUID","render_options":{"height":600,"width":800,"fov":90,"bounces":10,"samples_per_pixel":10}}'
+ * An example of a basic scene can be found in ./example.sh.
  */
 app.post('/', (req, res) => {
   let bucket = req.body.bucket;
@@ -63,27 +55,24 @@ app.post('/', (req, res) => {
   let cache_port = req.body.cachePort;
   let cache_key = req.body.cacheKey;
   let scene_uuid = req.body.uuid;
-  let render_options = req.body.render_options;
 
-  if (!bucket || !cache || !cache_port || !cache_key || !scene_uuid || !render_options) {
+  if (!bucket || !cache || !cache_port || !cache_key || !scene_uuid) {
     res.status(400).send("Bad request parameters");
+    return;
   }
-  // Validate render options.
-  if (!render_options.height || !render_options.width || !render_options.fov || !render_options.bounces || !render_options.samples_per_pixel) {
-    res.status(400).send("Missing options in render options.");
-  }
-  render_options.region = render_options.region || { top_left: [0, 0], height: 0, width: 0 };
-  let region = render_options.region;
+
+  let region = req.body.region || { top_left: [0, 0], height: 0, width: 0 };
   if (!region.top_left || region.top_left.length !== 2 || region.height === undefined || region.width === undefined) {
     res.status(400).send("Missing options in region options.");
+    return;
   }
-
 
   // Grab scene information from the redis cache.
   const redisClient = redis.createClient(cache_port, cache, { auth_pass: cache_key, tls: cache });
   redisClient.on('error', err => {
     console.log(err);
     res.status(500).send("Issue with the Redis cache.");
+    return;
   });
 
   redisClient.getAsync(scene_uuid)
@@ -97,18 +86,20 @@ app.post('/', (req, res) => {
 
       let camera = PT.JSON.parseValid(valid);
 
-      console.log("Rendering:");
-      PT.Camera.dump(camera);
+        console.log("Rendering:");
+        //PT.Camera.dump(camera);
 
-      let image = PT.Camera.render(camera, 
-        region.top_left[0], region.top_left[1], 
-        region.width,
-        region.height, 
-        render_options.width, 
-        render_options.height,
-        render_options.fov, 
-        render_options.bounces,
-        render_options.samples_per_pixel);
+        scene_information = valid.description;
+
+        let image = PT.Camera.render(camera, 
+          region.top_left[0], region.top_left[1], 
+          region.width,
+          region.height, 
+          scene_information.image.width, 
+          scene_information.image.height,
+          scene_information.image.fov, 
+          scene_information.image.bounces,
+          scene_information.image.samples_per_pixel);
 
       console.log("Done!");
 
