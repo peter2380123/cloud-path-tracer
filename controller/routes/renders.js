@@ -9,6 +9,7 @@ AWS.config.getCredentials(err => {
 });
 
 router.get('/:uuid', (req, res, next) => {
+  /*
   // Check to see if the key exists.
   //
   const bucket = process.env.AWSBUCKETNAME;
@@ -37,7 +38,8 @@ router.get('/:uuid', (req, res, next) => {
       } else {
         res.status(500).send("Issue when looking for image in bucket.");
       }
-    })
+    })*/
+  res.send(`TODO: Send back collation page here for ${req.params.uuid}.`);
 })
 
 module.exports = router;

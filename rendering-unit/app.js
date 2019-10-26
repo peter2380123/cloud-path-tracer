@@ -88,37 +88,35 @@ app.post('/', (req, res) => {
 
   redisClient.getAsync(scene_uuid)
     .then(scene_information => {
-      return new Promise((resolve, reject) => {
-        let valid = PT.JSON.checkValid(scene_information);
-        if (!valid.success) {
-          console.log(valid.reason);
-          res.status(400).send("Bad scene information");
-          return;
-        }
+      let valid = PT.JSON.checkValid(scene_information);
+      if (!valid.success) {
+        console.log(valid.reason);
+        res.status(400).send("Bad scene information");
+        return;
+      }
 
-        let camera = PT.JSON.parseValid(valid);
+      let camera = PT.JSON.parseValid(valid);
 
-        console.log("Rendering:");
-        PT.Camera.dump(camera);
+      console.log("Rendering:");
+      PT.Camera.dump(camera);
 
-        let image = PT.Camera.render(camera, 
-          region.top_left[0], region.top_left[1], 
-          region.width,
-          region.height, 
-          render_options.width, 
-          render_options.height,
-          render_options.fov, 
-          render_options.bounces,
-          render_options.samples_per_pixel);
+      let image = PT.Camera.render(camera, 
+        region.top_left[0], region.top_left[1], 
+        region.width,
+        region.height, 
+        render_options.width, 
+        render_options.height,
+        render_options.fov, 
+        render_options.bounces,
+        render_options.samples_per_pixel);
 
-        console.log("Done!");
+      console.log("Done!");
 
 
-        // Build an image buffer.
-        const image_width = PT.Image.getWidth(image);
-        const image_height = PT.Image.getHeight(image);
-        /*
-          // (R, G, B) tuples.
+      // Build an image buffer.
+      const image_width = PT.Image.getWidth(image);
+      const image_height = PT.Image.getHeight(image);
+      // (R, G, B) tuples.
       let bufferData = new Array(render_options.height * render_options.width * 3);
 
       console.log("Starting conversion to buffer");
@@ -136,37 +134,10 @@ app.post('/', (req, res) => {
 
       console.log("Converting to base64");
       let buffer = Buffer.from(bufferData).toString('base64');
-      */
 
-        // For now, in phase 2, we'll just generate the image here.
-        let png = new PNG({ width: image_width, height: image_height });
-        for (let y = 0; y < image_height; ++y) {
-          for (let x = 0; x < image_width; ++x) {
-            let idx = (image_width * y + x) * 4;
-
-            let pixel = PT.Image.getPixel(image, x, y);
-
-            png.data[idx + 0] = pixel.red;
-            png.data[idx + 1] = pixel.green;
-            png.data[idx + 2] = pixel.blue;
-            png.data[idx + 3] = 0xFF;
-          }
-        } 
-
-        png.pack().pipe(fs.createWriteStream('out.png')).on('finish', () => {
-          console.log("Done writing PNG image!");
-          resolve(new AWS.S3.ManagedUpload({
-            params: {
-              Bucket: bucket,
-              Key: scene_uuid + ".png",
-              Body: fs.createReadStream('out.png'),
-            }
-          }).promise());
-          //const params = { Bucket: bucket, Key: scene_uuid, Body: buffer };
-          //console.log(`Done! Putting ${JSON.stringify(params)}`);
-          //resolve(new AWS.S3({ apiVersion: '2006-03-01'}).putObject(params).promise());
-        });
-      })
+      const params = { Bucket: bucket, Key: scene_uuid, Body: buffer };
+      console.log(`Done! Putting ${JSON.stringify(params)}`);
+      return new AWS.S3({ apiVersion: '2006-03-01'}).putObject(params).promise();
     })
     .then((result) => {
       console.log("Successfully uploaded to bucket");
