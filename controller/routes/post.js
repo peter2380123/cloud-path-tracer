@@ -87,28 +87,27 @@ router.post('/', upload.any(), function(req, res, next) {
       console.log("Posting job to RU...")
       console.log(process.env.RUIP);
 
-      return new Promise((resolve, reject) => {
-        axios.post(process.env.RUIP, {
-          bucket: process.env.AWSBUCKETNAME,
-          cache: process.env.REDISCACHEHOSTNAME, 
-          cacheKey: process.env.REDISCACHEKEY,
-          uuid: uniqueID,
-          cachePort: process.env.CACHEPORT,
-          /*
-           * region: { top_left: [number, number], height: number, width: number } 
-           */
-        }).then(success => {
-          resolve([success, uniqueID]);
-        }).catch(err => reject(err));
-      })
-    }).then(successAndUUID => {
-      res.redirect('/renders/' + successAndUUID[1]);
-      console.log("Success page rendered") 
-    }).catch(error => {
-          console.log(error);
-          res.render('upload-fail', {title: 'Online Path Tracer', error_msg: error, error_code: error.stack});
-          console.log("Fail page rendered");
+      res.redirect('/renders/' + uniqueID);
+      console.log("Success page redirect") 
+
+      axios.post(process.env.RUIP, {
+        bucket: process.env.AWSBUCKETNAME,
+        cache: process.env.REDISCACHEHOSTNAME, 
+        cacheKey: process.env.REDISCACHEKEY,
+        uuid: uniqueID,
+        cachePort: process.env.CACHEPORT,
+        /*
+         * region: { top_left: [number, number], height: number, width: number } 
+         */
+      }).catch(_err => {
+        // Render failed.
+        // TODO: See Issue #37.
       });
+    }).catch(error => {
+      console.log(error);
+      res.render('upload-fail', {title: 'Online Path Tracer', error_msg: error, error_code: error.stack});
+      console.log("Fail page rendered");
+    });
 });
 
-  module.exports = router;
+module.exports = router;
