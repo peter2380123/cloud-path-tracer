@@ -93,6 +93,7 @@ app.post('/', (req, res) => {
         if (!valid.success) {
           console.log(valid.reason);
           res.status(400).send("Bad scene information");
+          return;
         }
 
         let camera = PT.JSON.parseValid(valid);

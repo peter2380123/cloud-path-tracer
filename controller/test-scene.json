@@ -1,0 +1,1 @@
+{"materials":[{"type":"lambertian","fuzziness":1,"colour":{"red":0.5,"green":0.5,"blue":0.5}}],"camera":{"pos":{"x":0,"y":0,"z":-2},"forward":{"x":0,"y":0,"z":1},"up":{"x":0,"y":1,"z":0}},"scene":[{"type":"sphere","material":0,"radius":1,"pos":{"x":0,"y":0,"z":0}}]} 

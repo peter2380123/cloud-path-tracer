@@ -19,7 +19,7 @@ var storage = multer.diskStorage({
     cb(null, './uploads')
   },
   filename: function(req, file, cb){
-    cb(null, uuid.v4() + '+' + Date.now() + '+' + file.originalname) //https://bit.ly/2J0AHuT
+    cb(null, uuid.v4()) //https://bit.ly/2J0AHuT
   }
 })
 
@@ -78,28 +78,30 @@ router.post('/', upload.any(), function(req, res, next) {
   upload2Cache(req.files[0].filename)
     .then(() => {
 
-      let uniqueID = String(req.files[0].filename).split("+", 1)
-      res.render('post', { title: 'Online Path Tracer', uuid: uniqueID });
-      console.log("Success page rendered")
-
+      const uniqueID = String(req.files[0].filename);
       console.log("Posting job to RU...")
-      axios.post(process.env.RUIP, {
-        bucket: process.env.AWSBUCKETNAME,
-        cache: process.env.REDISCACHEHOSTNAME, 
-        cacheKey: process.env.REDISCACHEKEY,
-        uuid: req.files[0].filename,
-        cachePort: process.env.CACHEPORT,
-        render_options: {"height":600,"width":800,"fov":90,"bounces":10,"samples_per_pixel":10}
-      }).then(function(response){
-        console.log("Job posted!")
-      }).catch(function(error){
-        console.log("Error encounted: " + error);
-      });
+      console.log(process.env.RUIP);
+
+      return new Promise((resolve, reject) => {
+        axios.post(process.env.RUIP, {
+          bucket: process.env.AWSBUCKETNAME,
+          cache: process.env.REDISCACHEHOSTNAME, 
+          cacheKey: process.env.REDISCACHEKEY,
+          uuid: uniqueID,
+          cachePort: process.env.CACHEPORT,
+          render_options: {"height":600,"width":800,"fov":90,"bounces":10,"samples_per_pixel":10}
+        }).then(success => {
+          resolve([success, uniqueID]);
+        }).catch(err => reject(err));
+      })
+    }).then(successAndUUID => {
+      res.redirect('/renders/' + successAndUUID[1]);
+      console.log("Success page rendered") 
     }).catch(error => {
-      console.log(error)
-      res.render('upload-fail', {title: 'Online Path Tracer', error_msg: error, error_code: JSON.stringify(error)})
-      console.log("Fail page rendered")
-    });
+          console.log(error);
+          res.render('upload-fail', {title: 'Online Path Tracer', error_msg: error, error_code: error.stack});
+          console.log("Fail page rendered");
+      });
 });
 
-module.exports = router;
+  module.exports = router;

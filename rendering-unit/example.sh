@@ -1,4 +1,4 @@
 
 #!/usr/bin/sh
-curl localhost:3001 --header "Content-Type: application/json" --request POST --data '{"bucket":"cab432","cache":"my-redis-cache.redis.cache.windows.net", "cacheKey": "JnmBrSnYJEC7e+6a+zXUtS4BaIAQT454Glza0BXlmOM=", "uuid":"302e3156-dd06-457c-a549-528677ccb296+1571985249553+pt-scene-info-template.json", "cachePort": 6380, "render_options":{"height":600,"width":800,"fov":90,"bounces":10,"samples_per_pixel":10}}'
+curl ec2-13-236-153-77.ap-southeast-2.compute.amazonaws.com:3000 --header "Content-Type: application/json" --request POST --data '{"bucket":"cloud-path-tracer-tiles","cache":"cloud-path-tracer.redis.cache.windows.net", "cacheKey": "AofcMYlgaeglj7V8yvhHgIqLurgxWNnEDA1NB7hO7X8=", "uuid":"jon-test", "cachePort": 6380, "render_options":{"height":600,"width":800,"fov":90,"bounces":10,"samples_per_pixel":10}}'
 
