@@ -94,7 +94,9 @@ router.post('/', upload.any(), function(req, res, next) {
           cacheKey: process.env.REDISCACHEKEY,
           uuid: uniqueID,
           cachePort: process.env.CACHEPORT,
-          render_options: {"height":600,"width":800,"fov":90,"bounces":10,"samples_per_pixel":10}
+          /*
+           * region: { top_left: [number, number], height: number, width: number } 
+           */
         }).then(success => {
           resolve([success, uniqueID]);
         }).catch(err => reject(err));
