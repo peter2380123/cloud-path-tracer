@@ -47,19 +47,24 @@ function upload2Cache(file) {
           reject('File is not a valid JSON format.');
           console.log("File validity: FAILED")
         } else {
-          console.log("File validity: PASSED")
+          console.log("File validity: PASSED");
+
+          console.log("Now checking for render image options:");
+          console.log(validity);
+          let image = validity.description.image;
+          if (!image || !image.fov || !image.width || !image.height || !image.samples_per_pixel || !image.bounces) {
+            reject("Missing image option(s).");
+            return;
+          }
 
           console.log("\nCache command: SET Message");
           console.log("Cache respone: " +  await cacheConnection.setAsync(file, data));
 
-          console.log("\nCache command: GET Message");
-          console.log("Cache response : " +  await cacheConnection.getAsync(file));
-
-          console.log("\nDeleting temp upload from server...")
         }
       } catch(e) {
         reject(e);
       }
+      console.log("\nDeleting temp upload from server...");
       fs.unlink(filepath, (err) => {
         if(err){
           reject(err);
