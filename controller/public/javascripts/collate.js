@@ -36,10 +36,7 @@ function base64ToRGB(dataURI) {
   });
 }
 
-function drawCanvas(canvas, data, metadata_entry){
-  canvas.height = 425;
-  canvas.width = 567;
-  document.body.appendChild(canvas);
+function drawCanvas(canvas, data, top_left, width, height) {
 
   let img = new Image();
   img.onload = function(){
@@ -47,8 +44,8 @@ function drawCanvas(canvas, data, metadata_entry){
   }
   let debug = [];
   let context = canvas.getContext('2d');
-  for(let x = 0; x < canvas.width; ++x){
-    for(let y = 0; y < canvas.height; ++y){
+  for(let x = top_left[0]; x < canvas.width; ++x){
+    for(let y = top_left[1]; y < canvas.height; ++y){
       let r_index = x * canvas.height * 3 + y * 3;
       //debug.push(r_index)
       let r = data[r_index];
@@ -90,7 +87,7 @@ function parseMetadata(file){
 */
 
 
-function launch(uuid, aws) {
+function launch(uuid, aws, total_height, total_width) {
   const metadata = aws + uuid + "-metadata";
   console.log("Fetching from: " + metadata)
   fetch(metadata, {
@@ -110,25 +107,20 @@ function launch(uuid, aws) {
             resolve({entry: entry, blob: blob});
           });
         })
-        .catch(err => reject(err));
+          .catch(err => reject(err));
       });
       return Promise.all(tiedPromises);
     })
-    .then(blobs => {
-      console.log(blobs);
-      /*
-      return res.blob()
-        .then(blob => {
-          console.log("Executing drawCanvas()")
-          base64ToRGB(blob).then(rgbarray => {
-            drawCanvas(rgbarray)
-          });
-        })
-        .catch(err => {
-          console.log(err)
-        })
-        */
-      console.log("Fucking brackets man");
+    .then(blobAndEntries => {
+      canvas.height = total_height;
+      canvas.width = total_width;
+      document.body.appendChild(canvas);
+      console.log(blobsAndEntries);
+      for (let blobAndEntry in blobsAndEntries) {
+        base64ToRGB(blobAndEntry.blob).then(rgbarray => {
+          drawCanvas(rgbarray, blob.entry.top_left, blob.entry.width, blob.entry.height);
+        });
+      }
     })
     .catch(e => console.log(e));
 }
