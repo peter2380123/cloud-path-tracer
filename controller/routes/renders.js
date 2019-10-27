@@ -46,13 +46,7 @@ router.get('/:uuid', (req, res, next) => {
     Bucket : bucket,
     Key : key
   };
-  
-  /*
-  const url = `http://${params.Bucket}.s3.amazonaws.com/${params.Key}`;
-  console.log(url)
-  res.render('finished-image', {base64: url})
-  return
-  */
+
   new AWS.S3().headObject(params).promise()
     .then(val => {
       return new Promise((resolve, reject) => {
