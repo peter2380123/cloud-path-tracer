@@ -40,18 +40,20 @@ router.get('/:uuid', (req, res, next) => {
       }
     })*/
   ////////
+
+  // We grab the metadata here!
   const bucket = 'cloud-path-tracer-tiles';
   const key = req.params.uuid;
   let params = {
     Bucket : bucket,
-    Key : key
+    Key : key + '-metadata'
   };
 
   new AWS.S3().headObject(params).promise()
     .then(val => {
       return new Promise((resolve, reject) => {
-        const url = `http://${params.Bucket}.s3.amazonaws.com/${params.Key}`;
-        res.render('finished-image', {base64: url});
+        const url = `http://${params.Bucket}.s3.amazonaws.com/`;
+        res.render('finished-image', { uuid: key, aws: url });
       });
     })
     .catch(err => {

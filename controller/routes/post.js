@@ -80,7 +80,7 @@ function upload2Cache(file) {
 router.post('/', upload.any(), function(req, res, next) {
   console.log("filename is: " + req.files[0].filename)
   //
-  let uniqueID = 'jon-test'
+  let uniqueID = 'c8c31f50-41fd-4972-8401-b2692b1814cf'
   res.redirect('/renders/' + uniqueID);
   return 
   //
