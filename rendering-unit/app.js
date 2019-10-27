@@ -117,16 +117,21 @@ app.post('/', (req, res) => {
       const image_width = PT.Image.getWidth(image);
       const image_height = PT.Image.getHeight(image);
 
+      console.log(`${JSON.stringify(region)}`);
+      console.log(`${image_width}x${image_height}`);
+
+
       // (R, G, B) tuples.
       let bufferData = new Array(image_width * image_height * 3);
 
       console.log("Starting conversion to buffer");
+      let idx = 0;
       for (let i = 0; i < image_width; ++i) {
         for (let j = 0; j < image_height; ++j) {
           let pixel = PT.Image.getPixel(image, i, j);
-          bufferData.push(pixel.red);
-          bufferData.push(pixel.green);
-          bufferData.push(pixel.blue);
+          bufferData[idx++] = pixel.red;
+          bufferData[idx++] = pixel.green;
+          bufferData[idx++] = pixel.blue;
         }
       }
 
