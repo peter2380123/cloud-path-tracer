@@ -100,6 +100,9 @@ app.post('/', (req, res) => {
         return;
       }
 
+      // At this point, everything has been validated. We preemtively let the controller move on with its life.
+      res.status(200).send();
+
       let camera = PT.JSON.parseValid(valid);
 
       console.log("Rendering:");
@@ -169,11 +172,9 @@ app.post('/', (req, res) => {
     })
     .then((result) => {
       console.log("Successfully uploaded to bucket");
-      res.status(200).send();
     })
     .catch(e => {
       console.log(e);
-      res.status(500).send("Something went wrong.");
     }); 
 });
 
