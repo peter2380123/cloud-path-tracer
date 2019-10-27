@@ -79,7 +79,11 @@ function upload2Cache(file) {
 /* GET users listing. */
 router.post('/', upload.any(), function(req, res, next) {
   console.log("filename is: " + req.files[0].filename)
-
+  //
+  let uniqueID = 'jon-test'
+  res.redirect('/renders/' + uniqueID);
+  return 
+  //
   upload2Cache(req.files[0].filename)
     .then(() => {
 

@@ -1,4 +1,7 @@
 extends layout
 block content
   h1 Finished render
-  <img src=#{image}>
+  script(src='/javascripts/collate.js', type='text/javascript')
+  <canvas id="canvas">
+  script.
+    launch("#{base64}")
