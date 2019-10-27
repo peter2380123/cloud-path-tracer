@@ -110,7 +110,6 @@ router.post('/', upload.any(), function(req, res, next) {
       const TILE_WIDTH = Math.ceil((WIDTH * TILE_HEIGHT) / HEIGHT);
 
       let promises = [];
-
       let metadata = [];
 
       for (let top_left_x = 0; top_left_x < WIDTH; top_left_x += TILE_WIDTH) {

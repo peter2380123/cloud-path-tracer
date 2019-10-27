@@ -117,10 +117,6 @@ app.post('/', (req, res) => {
       const image_width = PT.Image.getWidth(image);
       const image_height = PT.Image.getHeight(image);
 
-      console.log(`${JSON.stringify(region)}`);
-      console.log(`${image_width}x${image_height}`);
-
-
       // (R, G, B) tuples.
       let bufferData = new Array(image_width * image_height * 3);
 
