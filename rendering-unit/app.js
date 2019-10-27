@@ -40,6 +40,7 @@ app.use(cookieParser());
  *  cacheKey: String,
  *  cachePort: number,
  *  uuid: String,
+ *  outputFormat: String,
  *  region: ? {
  *    top_left: [ number, number ],
  *    height: number,
@@ -55,8 +56,9 @@ app.post('/', (req, res) => {
   let cache_port = req.body.cachePort;
   let cache_key = req.body.cacheKey;
   let scene_uuid = req.body.uuid;
+  let output_format = req.body.outputFormat || "{{UUID}}-{{REGION_TOP_LEFT_X}}-{{REGION_TOP_LEFT_Y}}-{{REGION_WIDTH}}x{{REGION_HEIGHT}}";
 
-  if (!bucket || !cache || !cache_port || !cache_key || !scene_uuid) {
+  if (!bucket || !cache || !cache_port || !cache_key || !scene_uuid || !output_format) {
     res.status(400).send("Bad request parameters");
     return;
   }
@@ -77,8 +79,15 @@ app.post('/', (req, res) => {
 
   redisClient.getAsync(scene_uuid)
     .then(scene_information => {
+      console.log(`Scene info at ${scene_uuid}`);
+      console.log(scene_information);
+      if (!scene_information) {
+        res.status(400).send("Scene information not found.");
+        return;
+      }
       let valid = PT.JSON.checkValid(scene_information);
       if (!valid.success) {
+        console.log("Rejecting:");
         console.log(valid.reason);
         res.status(400).send("Bad scene information");
         return;
@@ -107,8 +116,9 @@ app.post('/', (req, res) => {
       // Build an image buffer.
       const image_width = PT.Image.getWidth(image);
       const image_height = PT.Image.getHeight(image);
+
       // (R, G, B) tuples.
-      let bufferData = new Array(render_options.height * render_options.width * 3);
+      let bufferData = new Array(image_width * image_height * 3);
 
       console.log("Starting conversion to buffer");
       for (let i = 0; i < image_width; ++i) {
@@ -126,8 +136,19 @@ app.post('/', (req, res) => {
       console.log("Converting to base64");
       let buffer = Buffer.from(bufferData).toString('base64');
 
-      const params = { Bucket: bucket, Key: scene_uuid, Body: buffer };
-      console.log(`Done! Putting ${JSON.stringify(params)}`);
+      const key = output_format.toUpperCase()
+        .replace("{{UUID}}", scene_uuid)
+        .replace("{{REGION_TOP_LEFT_X}}", region.top_left[0])
+        .replace("{{REGION_TOP_LEFT_Y}}", region.top_left[1])
+        .replace("{{REGION_HEIGHT}}", region.height)
+        .replace("{{REGION_WIDTH}}", region.width)
+        .replace("{{HEIGHT}}", scene_information.image.height)
+        .replace("{{WIDTH}}", scene_information.image.width)
+        .toLowerCase();
+      const params = { Bucket: bucket, Key: key, Body: buffer };
+      //console.log(`Done! Putting ${JSON.stringify(params)}`);
+      console.log(`Key was ${params.Key}`);
+
       return new AWS.S3({ apiVersion: '2006-03-01'}).putObject(params).promise();
     })
     .then((result) => {
