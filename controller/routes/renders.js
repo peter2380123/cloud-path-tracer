@@ -53,7 +53,6 @@ router.get('/:uuid', (req, res, next) => {
   res.render('finished-image', {base64: url})
   return
   */
-  console.log("starting headObject...")
   new AWS.S3().headObject(params).promise()
     .then(val => {
       return new Promise((resolve, reject) => {
