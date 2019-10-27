@@ -102,12 +102,13 @@ app.post('/', (req, res) => {
 
       let camera = PT.JSON.parseValid(valid);
 
-        console.log("Rendering:");
-        //PT.Camera.dump(camera);
+      console.log("Rendering:");
+      //PT.Camera.dump(camera);
 
-        scene_information = valid.description;
+      scene_information = valid.description;
 
-        let image = PT.Camera.render(camera, 
+      return new Promise((resolve, reject) => {
+        PT.Camera.render.async(camera, 
           region.top_left[0], region.top_left[1], 
           region.width,
           region.height, 
@@ -115,10 +116,21 @@ app.post('/', (req, res) => {
           scene_information.image.height,
           scene_information.image.fov, 
           scene_information.image.bounces,
-          scene_information.image.samples_per_pixel);
+          scene_information.image.samples_per_pixel, (err, result) => {
+            // We can dispose the camera, as we're done.
+            PT.Camera.delete(camera);
 
-      console.log("Done!");
+            // Now, return the image.
+            if (err) {
+              reject(err);
+            } else {
+              resolve(result);
+            }
+          });
+      });
+    }).then(image => {
 
+      console.log("Done!"); 
 
       // Build an image buffer.
       const image_width = PT.Image.getWidth(image);
@@ -138,8 +150,6 @@ app.post('/', (req, res) => {
         }
       }
 
-      PT.Camera.delete(camera);
-      camera = null;
 
       console.log("Converting to base64");
       let buffer = Buffer.from(bufferData).toString('base64');
@@ -150,8 +160,6 @@ app.post('/', (req, res) => {
         .replace("{{REGION_TOP_LEFT_Y}}", region.top_left[1])
         .replace("{{REGION_HEIGHT}}", region.height)
         .replace("{{REGION_WIDTH}}", region.width)
-        .replace("{{HEIGHT}}", scene_information.image.height)
-        .replace("{{WIDTH}}", scene_information.image.width)
         .toLowerCase();
       const params = { Bucket: bucket, Key: key, Body: buffer };
       //console.log(`Done! Putting ${JSON.stringify(params)}`);
