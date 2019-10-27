@@ -110,8 +110,7 @@ router.post('/', upload.any(), function(req, res, next) {
       const TILE_WIDTH = Math.ceil((WIDTH * TILE_HEIGHT) / HEIGHT);
 
       let promises = [];
-
-      let metadata = [];
+      let metadata = { tiles: [], height: HEIGHT, width: WIDTH };
 
       for (let top_left_x = 0; top_left_x < WIDTH; top_left_x += TILE_WIDTH) {
         for (let top_left_y = 0; top_left_y < HEIGHT; top_left_y += TILE_HEIGHT) {
@@ -132,7 +131,7 @@ router.post('/', upload.any(), function(req, res, next) {
             region: { top_left: [top_left_x, top_left_y], height: tile_height, width: tile_width } 
           }));
 
-          metadata.push({ key: tileKey, top_left: [top_left_x, top_left_y], width: tile_width, height: tile_height});
+          metadata.tiles.push({ key: tileKey, top_left: [top_left_x, top_left_y], width: tile_width, height: tile_height});
         }
       } 
       Promise.all(promises)
@@ -141,11 +140,11 @@ router.post('/', upload.any(), function(req, res, next) {
           return new AWS.S3().putObject({ Bucket: process.env.AWSBUCKETNAME, Key: uniqueID + "-metadata", Body: JSON.stringify(metadata)}).promise();
         })
         .catch(err => {
-        console.log("Render failed with err " + err);
-        console.log(err.stack);
-        // Render failed.
-        // TODO: See Issue #37.
-      });
+          console.log("Render failed with err " + err);
+          console.log(err.stack);
+          // Render failed.
+          // TODO: See Issue #37.
+        });
     }).catch(error => {
       console.log(error);
       res.render('upload-fail', {title: 'Online Path Tracer', error_msg: error, error_code: error.stack});
