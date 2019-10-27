@@ -30,6 +30,13 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
 /**
+ * For health check.
+ */
+app.get('/', (req, res) => {
+  res.status(200).send();
+});
+
+/**
  * We only have a single route:
  *
  * POST to root, with the following JSON object in the body:
