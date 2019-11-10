@@ -1,6 +1,6 @@
 extends layout
 block content
-  h1 Your render will appear here.
+  h1 Your render will appear here. #{status ? ("Current status: " + status + ".") : ""}
   script(src='/javascripts/collate.js', type='text/javascript')
   <canvas id="canvas">
   script.

@@ -44,7 +44,7 @@ app.get('/', (req, res) => {
  * {
  *  bucket: String,
  *  cache: String,
- *  cacheKey: String,
+ *  cacheKey: ?String,
  *  cachePort: number,
  *  uuid: String,
  *  outputFormat: String,
@@ -61,11 +61,10 @@ app.post('/', (req, res) => {
   let bucket = req.body.bucket;
   let cache = req.body.cache;
   let cache_port = req.body.cachePort;
-  let cache_key = req.body.cacheKey;
   let scene_uuid = req.body.uuid;
   let output_format = req.body.outputFormat || "{{UUID}}-{{REGION_TOP_LEFT_X}}-{{REGION_TOP_LEFT_Y}}-{{REGION_WIDTH}}x{{REGION_HEIGHT}}";
 
-  if (!bucket || !cache || !cache_port || !cache_key || !scene_uuid || !output_format) {
+  if (!bucket || !cache || !cache_port || !scene_uuid || !output_format) {
     res.status(400).send("Bad request parameters");
     return;
   }
@@ -76,8 +75,10 @@ app.post('/', (req, res) => {
     return;
   }
 
+  let auth = (req.body.cacheKey && req.body.cacheKey.length > 0) ? { auth_pass: cache_key, tls: cache } : undefined;
+
   // Grab scene information from the redis cache.
-  const redisClient = redis.createClient(cache_port, cache, { auth_pass: cache_key, tls: cache });
+  const redisClient = redis.createClient(cache_port, cache, auth);
   redisClient.on('error', err => {
     console.log(err);
     res.status(500).send("Issue with the Redis cache.");
