@@ -1,0 +1,100 @@
+{
+  "image": {
+    "width": 1280,
+    "height": 720,
+    "samples_per_pixel": 1000,
+    "bounces": 20,
+    "fov": 90
+  },
+  "materials": [
+    {
+      "type": "lambertian",
+      "fuzziness": 1,
+      "colour": {
+        "red": 0.5,
+        "green": 0.5,
+        "blue": 0.5
+      }
+    },
+    {
+      "type": "debugon"
+    },
+    {
+      "type": "lambertian",
+      "fuzziness": 0.3,
+      "colour": {
+        "red": 0.8,
+        "green": 0.6,
+        "blue": 0.2
+      }
+    },
+    {
+      "type": "lambertian",
+      "fuzziness": 0.1,
+      "colour": {
+        "red": 0.8,
+        "green": 0.8,
+        "blue": 0
+      }
+    }
+  ],
+  "scene": [
+    {
+      "type": "sphere",
+      "material": 0,
+      "radius": 0.5,
+      "pos": {
+        "x": 0,
+        "y": 0,
+        "z": -1
+      }
+    },
+    {
+      "type": "sphere",
+      "material": 2,
+      "radius": 100,
+      "pos": {
+        "x": 0,
+        "y": -100.5,
+        "z": -1
+      }
+    },
+    {
+      "type": "sphere",
+      "material": 1,
+      "radius": 0.5,
+      "pos": {
+        "x": 1,
+        "y": 0,
+        "z": -1
+      }
+    },
+    {
+      "type": "sphere",
+      "material": 3,
+      "radius": 0.5,
+      "pos": {
+        "x": -1,
+        "y": 0,
+        "z": -1
+      }
+    }
+  ],
+  "camera": {
+    "pos": {
+      "x": 0,
+      "y": 0,
+      "z": -4
+    },
+    "forward": {
+      "x": 0,
+      "y": 0,
+      "z": 1
+    },
+    "up": {
+      "x": 0,
+      "y": 1,
+      "z": 0
+    }
+  }
+}

@@ -1,0 +1,62 @@
+{
+  "materials": [
+    {
+      "type": "lambertian",
+      "fuzziness": 1,
+      "colour": {
+        "red": 0.5,
+        "green": 0.5,
+        "blue": 0.5
+      }
+    },
+    {
+      "type": "debugon"
+    }
+  ],
+  "camera": {
+    "pos": {
+      "x": 0,
+      "y": 0,
+      "z": -2
+    },
+    "forward": {
+      "x": 0,
+      "y": 0,
+      "z": 1
+    },
+    "up": {
+      "x": 0,
+      "y": 1,
+      "z": 0
+    }
+  },
+  "scene": [
+    {
+      "type": "sphere",
+      "material": 0,
+      "radius": 1,
+      "pos": {
+        "x": -1.1,
+        "y": 0,
+        "z": 0.2
+      }
+    },
+    {
+      "type": "sphere",
+      "material": 1,
+      "radius": 1,
+      "pos": {
+        "x": 1.1,
+        "y": 0,
+        "z": 0.2
+      }
+    }
+  ],
+  "image": {
+    "width": 800,
+    "height": 600,
+    "samples_per_pixel": 10,
+    "bounces": 5,
+    "fov": 90
+  }
+}
