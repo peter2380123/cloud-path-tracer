@@ -31,7 +31,8 @@ var upload = multer({storage: storage})
 function upload2Cache(file) {
   return new Promise((resolve, reject) => {
     // Connect to the Azure Cache for Redis over the SSL port using the key.
-    var cacheConnection = redis.createClient(6380, process.env.REDISCACHEHOSTNAME,{auth_pass: process.env.REDISCACHEKEY, tls: {servername: process.env.REDISCACHEHOSTNAME}});
+    let auth = process.env.REDISCACHEKEY ? { auth_pass: process.env.REDISCACHEKEY, tls: {servername: process.env.REDISCACHEHOSTNAME }} : undefined;
+    let cacheConnection = redis.createClient(process.env.CACHEPORT, process.env.REDISCACHEHOSTNAME, auth);
 
     cacheConnection.on('error', function(err){
       console.log("Connection error.")
